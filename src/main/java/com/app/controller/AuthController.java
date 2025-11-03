@@ -14,6 +14,9 @@ import java.sql.SQLException;
 @WebServlet("/AuthController")
 public class AuthController extends HttpServlet {
     private AppDAO appDAO;
+    
+    // FINAL CORRECT JSP PATH
+    private static final String LOGIN_JSP = "/WEB-INF/views/login.jsp";
 
     public void init() throws ServletException {
         // Initialize DAO to establish DB connection on startup
@@ -35,14 +38,14 @@ public class AuthController extends HttpServlet {
                     logoutUser(request, response);
                     break;
                 default:
-                    // Fallback to showing the login page
-                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                    // Correct forward path for the views folder
+                    request.getRequestDispatcher(LOGIN_JSP).forward(request, response);
                     break;
             }
         } catch (SQLException e) {
             // Handle DB exceptions gracefully
             request.setAttribute("error", "A database error occurred: " + e.getMessage());
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher(LOGIN_JSP).forward(request, response);
         }
     }
     
@@ -52,10 +55,8 @@ public class AuthController extends HttpServlet {
         if ("LOGOUT".equals(command)) {
             logoutUser(request, response);
         } else {
-            // FINAL FIX: Using the relative path "login.jsp" (without leading slash) 
-            // for the internal forward, which should resolve the 404 error 
-            // from the Servlet's context.
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            // Correct forward path for the views folder
+            request.getRequestDispatcher(LOGIN_JSP).forward(request, response);
         }
     }
 
@@ -72,7 +73,7 @@ public class AuthController extends HttpServlet {
             response.sendRedirect("MaterialController?command=LIST");
         } else {
             request.setAttribute("error", "Invalid username or password.");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher(LOGIN_JSP).forward(request, response);
         }
     }
 
@@ -81,7 +82,7 @@ public class AuthController extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        // Redirect back to login page
-        response.sendRedirect("login.jsp");
+        // Redirect back to AuthController which handles the forward to login.jsp
+        response.sendRedirect("AuthController");
     }
 }
