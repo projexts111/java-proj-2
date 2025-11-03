@@ -35,14 +35,14 @@ public class AuthController extends HttpServlet {
                     logoutUser(request, response);
                     break;
                 default:
-                    // FIX: Forward to login page with leading slash
-                    request.getRequestDispatcher("/login.jsp").forward(request, response);
+                    // Fallback to showing the login page
+                    request.getRequestDispatcher("login.jsp").forward(request, response);
                     break;
             }
         } catch (SQLException e) {
             // Handle DB exceptions gracefully
             request.setAttribute("error", "A database error occurred: " + e.getMessage());
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
     
@@ -52,9 +52,10 @@ public class AuthController extends HttpServlet {
         if ("LOGOUT".equals(command)) {
             logoutUser(request, response);
         } else {
-            // FIX: Use leading slash '/' to ensure the path to login.jsp starts 
-            // from the web application root (Context Root). This solves the 404 error.
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            // FINAL FIX: Using the relative path "login.jsp" (without leading slash) 
+            // for the internal forward, which should resolve the 404 error 
+            // from the Servlet's context.
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 
@@ -71,7 +72,7 @@ public class AuthController extends HttpServlet {
             response.sendRedirect("MaterialController?command=LIST");
         } else {
             request.setAttribute("error", "Invalid username or password.");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 
@@ -80,6 +81,7 @@ public class AuthController extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
+        // Redirect back to login page
         response.sendRedirect("login.jsp");
     }
 }
