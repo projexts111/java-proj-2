@@ -23,7 +23,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid container-lg">
             <a class="navbar-brand" href="MaterialController?command=LIST">
-                <i class="fas fa-layer-group me-2"></i>SCMS Portal
+                <i class="fas fa-layer-group me-2"></i>Study Material Sharing Platform
             </a>
             <div class="d-flex">
                 <span class="navbar-text me-3 text-white-50 d-none d-md-inline">
@@ -94,3 +94,4 @@
     </div>
 </body>
 </html>
+
