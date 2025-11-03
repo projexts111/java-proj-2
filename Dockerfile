@@ -1,6 +1,6 @@
 # === STAGE 1: BUILD (Compiles the Java code) ===
-# Using a standard, available tag for Maven and OpenJDK 11
-FROM maven:3.8.7-openjdk-11 AS build
+# Using the confirmed existing 'slim' tag for guaranteed image pull
+FROM maven:3.8.7-jdk-11-slim AS build 
 
 # Set the working directory inside the container
 WORKDIR /app
