@@ -65,7 +65,7 @@
                         </form>
                     </div>
                     <div class="card-footer text-center text-muted bg-light rounded-bottom-2">
-                        <small>Default: **staff / password**</small>
+                        <small>Don't have an account? <a href="register.jsp" class="text-primary fw-bold">Sign In Here</a></small>
                     </div>
                 </div>
             </div>
