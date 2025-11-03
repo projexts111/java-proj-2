@@ -14,7 +14,7 @@ public class AppDAO {
 
     public AppDAO() {
         try {
-            // **CRITICAL for Render Deployment:** Get DB config from Environment Variable
+            // CRITICAL for Render Deployment: Get DB config from Environment Variable
             String dbUrl = System.getenv("DATABASE_URL");
 
             if (dbUrl == null || dbUrl.isEmpty()) {
@@ -67,6 +67,19 @@ public class AppDAO {
             }
         }
         return null;
+    }
+
+    // --- Registration Method ---
+    
+    public void addUser(User user) throws SQLException {
+        // NOTE: This SQL assumes your 'users' table has columns: id, username, password, role
+        String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getPassword());
+            statement.setString(3, user.getRole());
+            statement.executeUpdate();
+        }
     }
 
     // --- Material CRUD Methods ---
@@ -138,16 +151,5 @@ public class AppDAO {
             return statement.executeUpdate() > 0;
         }
     }
-}
 
-public void addUser(User user) throws SQLException {
-    // NOTE: This SQL assumes your 'users' table has columns: id, username, password, role
-    String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
-    try (PreparedStatement statement = connection.prepareStatement(sql)) {
-        statement.setString(1, user.getUsername());
-        statement.setString(2, user.getPassword());
-        statement.setString(3, user.getRole());
-        statement.executeUpdate();
-    }
 }
-
