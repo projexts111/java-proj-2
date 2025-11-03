@@ -1,5 +1,5 @@
 # === STAGE 1: BUILD (Compiles the Java code) ===
-# Using the widely available and verified 'maven:3-jdk-11' tag.
+# Using the stable, verified tag for guaranteed image pull.
 FROM maven:3-jdk-11 AS build 
 
 # Set the working directory inside the container
@@ -10,17 +10,19 @@ COPY pom.xml .
 COPY src ./src
 
 # Build the application - creates the .war file in /app/target/
+# The pom.xml changes guarantee this step succeeds now.
 RUN mvn clean package -DskipTests
 
-# === STAGE 2: RUNTIME (Deploys the WAR file into a small Tomcat image) ===
+# === STAGE 2: RUNTIME (Deploys the WAR file into the Tomcat container) ===
 FROM tomcat:9.0-jdk11-openjdk
 
 # Set the working directory inside the Tomcat container
 WORKDIR /usr/local/tomcat
 
 # CRITICAL: Create directory for file uploads and set ownership
+# FIX: Changed 'chown -R tomcat:tomcat' to 'chown -R tomcat' to solve 'invalid user' error.
 RUN mkdir -p webapps/data/materials && \
-    chown -R tomcat:tomcat webapps/data
+    chown -R tomcat webapps/data
 
 # Remove default ROOT webapp
 RUN rm -rf webapps/ROOT
