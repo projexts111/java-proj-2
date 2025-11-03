@@ -15,10 +15,11 @@ import java.sql.SQLException;
 public class AuthController extends HttpServlet {
     private AppDAO appDAO;
     
-    // DEFINITIVE PATH: Absolute path to the secured views folder
-    private static final String LOGIN_JSP = "/WEB-INF/views/login.jsp";
+    // DEFINITIVE PATH: login.jsp is now in the web root (unsecured) to resolve 404
+    private static final String LOGIN_JSP = "/login.jsp"; 
 
     public void init() throws ServletException {
+        // Initialize DAO to establish DB connection on startup
         appDAO = new AppDAO();
     }
 
@@ -37,11 +38,12 @@ public class AuthController extends HttpServlet {
                     logoutUser(request, response);
                     break;
                 default:
-                    // Use the absolute path constant
+                    // Use the direct, un-secured login page reference
                     request.getRequestDispatcher(LOGIN_JSP).forward(request, response);
                     break;
             }
         } catch (SQLException e) {
+            // Forward back to login with error message
             request.setAttribute("error", "A database error occurred: " + e.getMessage());
             request.getRequestDispatcher(LOGIN_JSP).forward(request, response);
         }
@@ -53,7 +55,8 @@ public class AuthController extends HttpServlet {
         if ("LOGOUT".equals(command)) {
             logoutUser(request, response);
         } else {
-            // Use the absolute path constant
+            // Use the direct, un-secured login page reference
+            // This is the call that resolves the initial 404 error
             request.getRequestDispatcher(LOGIN_JSP).forward(request, response);
         }
     }
@@ -67,6 +70,7 @@ public class AuthController extends HttpServlet {
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
+            // Redirect to the Material List Controller (which uses secured JSPs)
             response.sendRedirect("MaterialController?command=LIST");
         } else {
             request.setAttribute("error", "Invalid username or password.");
@@ -79,7 +83,7 @@ public class AuthController extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        // Redirect back to AuthController which handles the forward to login.jsp
+        // Redirect back to AuthController (which forwards to the now-available login.jsp)
         response.sendRedirect("AuthController");
     }
 }
