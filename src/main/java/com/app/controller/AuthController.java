@@ -15,11 +15,10 @@ import java.sql.SQLException;
 public class AuthController extends HttpServlet {
     private AppDAO appDAO;
     
-    // FINAL CORRECT JSP PATH
-    private static final String LOGIN_JSP = "/webapp/WEB-INF/views/login.jsp";
+    // DEFINITIVE PATH: Absolute path to the secured views folder
+    private static final String LOGIN_JSP = "/WEB-INF/views/login.jsp";
 
     public void init() throws ServletException {
-        // Initialize DAO to establish DB connection on startup
         appDAO = new AppDAO();
     }
 
@@ -38,12 +37,11 @@ public class AuthController extends HttpServlet {
                     logoutUser(request, response);
                     break;
                 default:
-                    // Correct forward path for the views folder
+                    // Use the absolute path constant
                     request.getRequestDispatcher(LOGIN_JSP).forward(request, response);
                     break;
             }
         } catch (SQLException e) {
-            // Handle DB exceptions gracefully
             request.setAttribute("error", "A database error occurred: " + e.getMessage());
             request.getRequestDispatcher(LOGIN_JSP).forward(request, response);
         }
@@ -55,7 +53,7 @@ public class AuthController extends HttpServlet {
         if ("LOGOUT".equals(command)) {
             logoutUser(request, response);
         } else {
-            // Correct forward path for the views folder
+            // Use the absolute path constant
             request.getRequestDispatcher(LOGIN_JSP).forward(request, response);
         }
     }
@@ -69,7 +67,6 @@ public class AuthController extends HttpServlet {
         if (user != null) {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
-            // Redirect to the Material List Controller after successful login
             response.sendRedirect("MaterialController?command=LIST");
         } else {
             request.setAttribute("error", "Invalid username or password.");
@@ -86,4 +83,3 @@ public class AuthController extends HttpServlet {
         response.sendRedirect("AuthController");
     }
 }
-
