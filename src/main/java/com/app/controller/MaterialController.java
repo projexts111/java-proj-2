@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.sql.SQLException;
+import java.util.List; // FIX: Added import for List
 import java.util.UUID;
-import java.util.List;
 
 // **CRITICAL:** Enables multipart/form-data processing for file uploads
 @WebServlet("/MaterialController")
@@ -31,11 +31,14 @@ public class MaterialController extends HttpServlet {
     private AppDAO appDAO;
     // Set a consistent, accessible path within the Tomcat container
     private static final String UPLOAD_DIRECTORY = "/opt/tomcat/webapps/data/materials/"; 
-    // This directory MUST be created/writable in the Docker/Render environment
+    
+    // Final correct JSP paths
+    private static final String LIST_JSP = "/WEB-INF/views/list-materials.jsp";
+    private static final String UPLOAD_FORM_JSP = "/WEB-INF/views/upload-form.jsp";
 
     public void init() throws ServletException {
         appDAO = new AppDAO();
-        // **Create the upload directory on init**
+        // Create the upload directory on init
         File uploadDir = new File(UPLOAD_DIRECTORY);
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
@@ -54,8 +57,8 @@ public class MaterialController extends HttpServlet {
                     listMaterials(request, response);
                     break;
                 case "LOAD":
-                    // Generally used to load an EDIT form, but here, we just load the UPLOAD form
-                    request.getRequestDispatcher("/WEB-INF/views/upload-form.jsp").forward(request, response);
+                    // FIX: Point to the secured UPLOAD_FORM_JSP path
+                    request.getRequestDispatcher(UPLOAD_FORM_JSP).forward(request, response);
                     break;
                 case "DOWNLOAD":
                     downloadMaterial(request, response);
@@ -98,11 +101,12 @@ public class MaterialController extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         
-        // **Data Isolation:** Get only the materials owned by the current user
+        // Data Isolation: Get only the materials owned by the current user
         List<Material> materials = appDAO.getAllMaterialsByUserId(user.getId());
         
         request.setAttribute("MATERIALS_LIST", materials);
-        request.getRequestDispatcher("/WEB-INF/views/list-materials.jsp").forward(request, response);
+        // FIX: Point to the secured LIST_JSP path
+        request.getRequestDispatcher(LIST_JSP).forward(request, response);
     }
 
     private void uploadMaterial(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
@@ -116,7 +120,7 @@ public class MaterialController extends HttpServlet {
         String description = request.getParameter("description");
 
         String originalFileName = filePart.getSubmittedFileName();
-        // **Security/Unique Naming:** Generate a unique, secure file name
+        // Security/Unique Naming: Generate a unique, secure file name
         String storedFileName = UUID.randomUUID().toString() + "_" + originalFileName.replaceAll("[^a-zA-Z0-9.-]", "_");
         
         // 2. Save file to disk
@@ -141,9 +145,10 @@ public class MaterialController extends HttpServlet {
     private void downloadMaterial(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
+        // Ensure the parameter is parsed safely
         int materialId = Integer.parseInt(request.getParameter("materialId"));
         
-        // **Security Check:** Retrieve material only if the user owns it
+        // Security Check: Retrieve material only if the user owns it
         Material material = appDAO.getMaterialByIdAndUser(materialId, user.getId());
 
         if (material != null) {
@@ -206,11 +211,9 @@ public class MaterialController extends HttpServlet {
                 if (fileToDelete.exists()) {
                     fileToDelete.delete();
                 }
-                // No need to fail if file delete fails, as DB record is gone.
             }
         }
         
         response.sendRedirect("MaterialController?command=LIST");
     }
-
 }
