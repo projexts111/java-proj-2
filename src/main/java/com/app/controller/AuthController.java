@@ -16,7 +16,7 @@ public class AuthController extends HttpServlet {
     private AppDAO appDAO;
     
     // FINAL CORRECT JSP PATH
-    private static final String LOGIN_JSP = "/WEB-INF/views/login.jsp";
+    private static final String LOGIN_JSP = "/webapp/WEB-INF/views/login.jsp";
 
     public void init() throws ServletException {
         // Initialize DAO to establish DB connection on startup
@@ -86,3 +86,4 @@ public class AuthController extends HttpServlet {
         response.sendRedirect("AuthController");
     }
 }
+
