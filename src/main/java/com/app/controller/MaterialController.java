@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.UUID;
+import java.util.List;
 
 // **CRITICAL:** Enables multipart/form-data processing for file uploads
 @WebServlet("/MaterialController")
@@ -211,4 +212,5 @@ public class MaterialController extends HttpServlet {
         
         response.sendRedirect("MaterialController?command=LIST");
     }
+
 }
