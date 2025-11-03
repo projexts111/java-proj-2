@@ -139,3 +139,15 @@ public class AppDAO {
         }
     }
 }
+
+public void addUser(User user) throws SQLException {
+    // NOTE: This SQL assumes your 'users' table has columns: id, username, password, role
+    String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
+    try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        statement.setString(1, user.getUsername());
+        statement.setString(2, user.getPassword());
+        statement.setString(3, user.getRole());
+        statement.executeUpdate();
+    }
+}
+
